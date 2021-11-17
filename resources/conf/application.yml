@@ -1,0 +1,25 @@
+server:
+  http:
+    port: 8080
+
+  static:
+    enabled: true
+
+  smart-server:
+    application:
+      name: "Backend challenge"
+
+  smart-routes:
+    cors:
+      enabled: true
+      always-allow-origin: true
+      always-allow-credentials: true
+      allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
+
+  urouting:
+    default-content-type: "application/json"
+    content-type-priority: "CONFIG"
+
+  health-check:
+    enabled: true
+    url: "/api/internal/health-check"

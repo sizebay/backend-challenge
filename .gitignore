@@ -1,0 +1,15 @@
+.idea
+.cache
+.project
+.metadata
+.settings
+.DS_Store
+.terraform
+.classpath
+.factorypath
+*.iml
+pom.xml.*
+faces-config.xml
+derby.log
+target
+output
