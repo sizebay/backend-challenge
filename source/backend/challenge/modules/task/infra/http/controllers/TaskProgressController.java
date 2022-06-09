@@ -1,5 +1,6 @@
 package backend.challenge.modules.task.infra.http.controllers;
 
+import backend.challenge.modules.task.dtos.TaskProgressDTO;
 import backend.challenge.modules.task.infra.http.views.TaskProgressView;
 import backend.challenge.modules.task.models.Task;
 import backend.challenge.modules.task.services.*;
@@ -22,14 +23,25 @@ public class TaskProgressController {
 	@PUT
 	@Path("single/{taskId}")
 	public Response updateProgress(@PathParam("taskId") Long taskId, TaskProgressView taskProgressView) {
-		/*
-			TODO: A rota deve alterar apenas o progresso da tarefa que possua o id igual ao id correspondente
-			 			nos parâmetros da rota.
-			 			O `progress` pode ter o valor máximo de 100, e quando ele atingi o máximo,
-			 			o `status` deve ser alterado para `COMPLETE`
-		 */
 
-		return DefaultResponse.ok().entity("Hello world");
+		try {
+
+			TaskProgressDTO taskProgressDTO = TaskProgressDTO.create();
+			taskProgressDTO.setId(taskId);
+			taskProgressDTO.setProgress(taskProgressView.getProgress());
+			Task task = updateTaskProgressService.execute(taskProgressDTO);
+
+			if (taskProgressView.getProgress() > 100){
+				return DefaultResponse.badRequest().entity("O progresso não pode ser maior que 100");
+			} else if (task == null) {
+				return DefaultResponse.badRequest().entity("Task não encontrada");
+			}
+
+			return DefaultResponse.ok().entity(task);
+
+		} catch (Exception ex) {
+			return DefaultResponse.badRequest().entity(ex.getMessage());
+		}
 	}
 
 }
