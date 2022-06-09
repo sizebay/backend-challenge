@@ -1,5 +1,7 @@
 package backend.challenge.modules.task.infra.http.controllers;
 
+
+import backend.challenge.modules.task.dtos.TaskDTO;
 import backend.challenge.modules.task.infra.http.views.TaskView;
 import backend.challenge.modules.task.models.Task;
 import backend.challenge.modules.task.services.*;
@@ -7,69 +9,123 @@ import kikaha.urouting.api.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 
 @Singleton
 @Path("tasks")
 public class TaskController {
 
-	private final ICreateTaskService createTaskService;
-	private final IDeleteTaskService deleteTaskService;
-	private final IRetrieveAllTasksService retrieveAllTasksService;
-	private final IRetrieveTaskByIdService retrieveTaskByIdService;
-	private final IUpdateTaskService updateTaskService;
+    private final ICreateTaskService createTaskService;
+    private final IDeleteTaskService deleteTaskService;
+    private final IRetrieveAllTasksService retrieveAllTasksService;
+    private final IRetrieveTaskByIdService retrieveTaskByIdService;
+    private final IUpdateTaskService updateTaskService;
 
-	@Inject
-	public TaskController(
-		final ICreateTaskService createTaskService,
-		final IDeleteTaskService deleteTaskService,
-		final IRetrieveAllTasksService retrieveAllTasksService
-	) {
-		this.createTaskService = createTaskService;
-		this.deleteTaskService = deleteTaskService;
-		this.retrieveAllTasksService = retrieveAllTasksService;
-		this.retrieveTaskByIdService = null;
-		this.updateTaskService = null;
-	}
+    @Inject
+    public TaskController(
+            final ICreateTaskService createTaskService,
+            final IDeleteTaskService deleteTaskService,
+            final IRetrieveAllTasksService retrieveAllTasksService,
+            final IRetrieveTaskByIdService retrieveTaskByIdService,
+            final IUpdateTaskService updateTaskService
+    ) {
+        this.createTaskService = createTaskService;
+        this.deleteTaskService = deleteTaskService;
+        this.retrieveAllTasksService = retrieveAllTasksService;
+        this.retrieveTaskByIdService = retrieveTaskByIdService;
+        this.updateTaskService = updateTaskService;
+    }
 
-	@GET
-	public Response show() {
-		// TODO: Rota que lista todas as tarefas
+    @GET
+    public Response show() {
 
-		return DefaultResponse.ok().entity("Hello world");
-	}
+        try {
 
-	@GET
-	@Path("single/{taskId}")
-	public Response index(@PathParam("taskId") Long taskId) {
-		// TODO: A rota deve retornar somente a tarefa a qual o id corresponder
+            List<Task> tasks = retrieveAllTasksService.execute();
 
-		return DefaultResponse.ok().entity("Hello world");
-	}
+            if (tasks.size() == 0) {
+                return DefaultResponse.badRequest().entity("Nenhuma task registrada");
+            } else {
+                return DefaultResponse.ok().entity(tasks);
+            }
 
-	@POST
-	public Response create(TaskView task) {
-		// TODO: A rota deve receber title e description, sendo o `title` o título da tarefa e `description` uma descrição da tarefa.
+        } catch (Exception ex) {
+            return DefaultResponse.badRequest().entity(ex.getMessage());
+        }
+    }
 
-		return DefaultResponse.ok().entity("Hello world");
-	}
+    @GET
+    @Path("single/{taskId}")
+    public Response index(@PathParam("taskId") Long taskId) {
 
-	@PUT
-	@Path("single/{taskId}")
-	public Response update(@PathParam("taskId") Long taskId, Task task) {
-		/*
-			TODO:  A rota deve alterar apenas o title e description da tarefa
-			 			 que possua o id igual ao id correspondente nos parâmetros da rota.
-		 */
+        try {
+            Task task = retrieveTaskByIdService.execute(taskId);
 
-		return DefaultResponse.ok().entity("Hello world");
-	}
+            if (task == null) {
+                return DefaultResponse.notFound().entity("Task não encontrada");
+            }
+            return DefaultResponse.ok().entity(task);
+        } catch (Exception ex) {
+            return DefaultResponse.badRequest().entity(ex.getMessage());
+        }
+    }
 
-	@DELETE
-	@Path("single/{taskId}")
-	public Response delete(@PathParam("taskId") Long taskId) {
-		// TODO: A rota deve deletar a tarefa com o id correspondente nos parâmetros da rota
+    @POST
+    public Response create(TaskView task) {
 
-		return DefaultResponse.ok().entity("Hello world");
-	}
+        try {
+            TaskDTO taskDTO = TaskDTO.create();
+            taskDTO.setTitle(task.getTitle());
+            taskDTO.setDescription(task.getDescription());
+            Task taskCreated = createTaskService.execute(taskDTO);
 
+            return DefaultResponse.created().entity(taskCreated);
+        } catch (Exception ex) {
+            return DefaultResponse.badRequest().entity(ex.getMessage());
+        }
+    }
+
+    @PUT
+    @Path("single/{taskId}")
+    public Response update(@PathParam("taskId") Long taskId, Task task) {
+
+        try {
+            Task taskToUpdate = retrieveTaskByIdService.execute(taskId);
+
+            if (taskToUpdate == null) {
+                return DefaultResponse.notFound().entity("Task não encontrada");
+            }
+            taskToUpdate.setTitle(task.getTitle());
+            taskToUpdate.setDescription(task.getDescription());
+            return DefaultResponse.ok().entity(updateTaskService.execute(taskToUpdate));
+
+        } catch (Exception ex) {
+            return DefaultResponse.badRequest().entity(ex.getMessage());
+        }
+    }
+
+    @DELETE
+    @Path("single/{taskId}")
+    public Response delete(@PathParam("taskId") Long taskId) {
+
+        try {
+
+            Task taskExists = retrieveTaskByIdService.execute(taskId);
+            if (taskExists == null) {
+                return DefaultResponse.notFound().entity("Task não encontrada");
+            }
+
+            deleteTaskService.execute(taskId);
+            Task task = retrieveTaskByIdService.execute(taskId);
+
+            if (task == null) {
+                return DefaultResponse.ok().entity("Task removida com sucesso");
+            } else {
+                return DefaultResponse.badRequest().entity("Ocorreu um erro ao deletar");
+            }
+
+        } catch (Exception ex) {
+            return DefaultResponse.badRequest().entity(ex.getMessage());
+        }
+    }
 }
