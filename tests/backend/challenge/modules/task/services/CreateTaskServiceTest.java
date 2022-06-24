@@ -1,29 +1,32 @@
 package backend.challenge.modules.task.services;
 
+import backend.challenge.modules.task.dtos.TaskDTO;
 import backend.challenge.modules.task.repositories.ITaskRepository;
 import backend.challenge.modules.task.repositories.TaskRepository;
 import kikaha.core.test.KikahaRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith( KikahaRunner.class )
 public class CreateTaskServiceTest {
 
 	private ICreateTaskService createTaskService;
+	private UtilTestsTasks utilTestsTasks;
 
 	@Before
 	public void init() {
 		final ITaskRepository taskRepository = new TaskRepository();
-
 		createTaskService = new CreateTaskService(taskRepository);
+		utilTestsTasks = new UtilTestsTasks();
 	}
 
 	@Test
 	public void shouldBeAbleToCreateANewTask() {
-		// TODO:  Para que esse teste passe, sua aplicação deve permitir que
-		//  uma tarefa seja criado, e retorne um json com a tarefa criada.
+		TaskDTO taskDTO = utilTestsTasks.createTask();
+		assertNotNull(createTaskService.execute(taskDTO));
 	}
 
 
