@@ -1,9 +1,12 @@
 package backend.challenge.modules.task.infra.http.controllers;
 
+import backend.challenge.modules.task.dtos.TaskDTO;
 import backend.challenge.modules.task.infra.http.views.TaskView;
 import backend.challenge.modules.task.models.Task;
 import backend.challenge.modules.task.services.*;
 import kikaha.urouting.api.*;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,54 +25,70 @@ public class TaskController {
 	public TaskController(
 		final ICreateTaskService createTaskService,
 		final IDeleteTaskService deleteTaskService,
-		final IRetrieveAllTasksService retrieveAllTasksService
+		final IRetrieveAllTasksService retrieveAllTasksService,
+		final IRetrieveTaskByIdService retrieveTaskByIdService,
+		final IUpdateTaskService updateTaskService
 	) {
 		this.createTaskService = createTaskService;
 		this.deleteTaskService = deleteTaskService;
 		this.retrieveAllTasksService = retrieveAllTasksService;
-		this.retrieveTaskByIdService = null;
-		this.updateTaskService = null;
+		this.retrieveTaskByIdService = retrieveTaskByIdService;
+		this.updateTaskService = updateTaskService;
 	}
 
 	@GET
 	public Response show() {
-		// TODO: Rota que lista todas as tarefas
+		List<Task> tasks = retrieveAllTasksService.execute();
 
-		return DefaultResponse.ok().entity("Hello world");
+		if (tasks.size() == 0) {
+			DefaultResponse.badRequest().entity("No task found");
+		}
+
+		return DefaultResponse.ok().entity(tasks);
 	}
 
 	@GET
 	@Path("single/{taskId}")
 	public Response index(@PathParam("taskId") Long taskId) {
-		// TODO: A rota deve retornar somente a tarefa a qual o id corresponder
+		Task task = retrieveTaskByIdService.execute(taskId);
 
-		return DefaultResponse.ok().entity("Hello world");
+		if (task == null) {
+			DefaultResponse.notFound().entity("Task not found");
+		}
+
+		return DefaultResponse.ok().entity(task); 
 	}
 
 	@POST
-	public Response create(TaskView task) {
-		// TODO: A rota deve receber title e description, sendo o `title` o título da tarefa e `description` uma descrição da tarefa.
-
-		return DefaultResponse.ok().entity("Hello world");
+	public Response create(TaskView taskView) {
+		TaskDTO taskDTO = new TaskDTO(taskView.getTitle(), taskView.getDescription());
+        Task task = createTaskService.execute(taskDTO);
+        return DefaultResponse.created().entity(task);
 	}
 
 	@PUT
 	@Path("single/{taskId}")
 	public Response update(@PathParam("taskId") Long taskId, Task task) {
-		/*
-			TODO:  A rota deve alterar apenas o title e description da tarefa
-			 			 que possua o id igual ao id correspondente nos parâmetros da rota.
-		 */
+		Task retrievedTask = retrieveTaskByIdService.execute(taskId);
 
-		return DefaultResponse.ok().entity("Hello world");
+        if (retrievedTask == null) {
+            return DefaultResponse.badRequest().entity("Task not found");
+        }
+
+        updateTaskService.execute(task);
+        return DefaultResponse.ok().entity("Task updated");
 	}
 
 	@DELETE
 	@Path("single/{taskId}")
 	public Response delete(@PathParam("taskId") Long taskId) {
-		// TODO: A rota deve deletar a tarefa com o id correspondente nos parâmetros da rota
+        boolean taskRemoved = deleteTaskService.execute(taskId);
 
-		return DefaultResponse.ok().entity("Hello world");
+        if (!taskRemoved) {
+            return DefaultResponse.badRequest().entity("Task not found");
+        }
+
+		return DefaultResponse.ok().entity("Task removed");
 	}
 
 }

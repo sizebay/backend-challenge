@@ -16,8 +16,8 @@ public class DeleteTaskService implements IDeleteTaskService {
 	}
 
 	@Override
-	public void execute(Long taskId) {
-		// TODO: Criar serviço responsável por deletar a tarefa
+	public boolean execute(Long taskId) {
+		return taskRepository.delete(taskId);
 	}
 
 }

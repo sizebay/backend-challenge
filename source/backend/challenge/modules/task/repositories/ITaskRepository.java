@@ -1,6 +1,7 @@
 package backend.challenge.modules.task.repositories;
 
 import backend.challenge.modules.task.dtos.TaskDTO;
+import backend.challenge.modules.task.dtos.TaskProgressDTO;
 import backend.challenge.modules.task.models.Task;
 
 import java.util.List;
@@ -11,6 +12,7 @@ public interface ITaskRepository {
 	List<Task> show();
 	Task create(TaskDTO taskDTO);
 	Task update(Task task);
-	void delete(Long taskId);
+	Task updateProgress(TaskProgressDTO taskProgressDTO);
+	boolean delete(Long taskId);
 
 }

@@ -13,5 +13,18 @@ public class TaskProgressDTO {
 
 	private Long id;
 	private int progress;
+	
+	public TaskProgressDTO(Long id, int progress) {
+		this.id = id;
+		this.progress = progress;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public int getProgress() {
+		return progress;
+	}
 
 }

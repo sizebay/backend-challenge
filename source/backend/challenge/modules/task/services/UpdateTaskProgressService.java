@@ -1,25 +1,25 @@
 package backend.challenge.modules.task.services;
 
+import backend.challenge.modules.task.dtos.TaskProgressDTO;
 import backend.challenge.modules.task.models.Task;
 import backend.challenge.modules.task.repositories.ITaskRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 
 @Singleton
-public class RetrieveAllTasksService implements IRetrieveAllTasksService {
+public class UpdateTaskProgressService implements IUpdateTaskProgressService {
 
 	private final ITaskRepository taskRepository;
 
 	@Inject
-	public RetrieveAllTasksService(final ITaskRepository taskRepository) {
+	public UpdateTaskProgressService(final ITaskRepository taskRepository) {
 		this.taskRepository = taskRepository;
 	}
 
 	@Override
-	public List<Task> execute() {
-		return taskRepository.show();
+	public Task execute(TaskProgressDTO taskProgressDTO) {
+		return taskRepository.updateProgress(taskProgressDTO);
 	}
 
 }

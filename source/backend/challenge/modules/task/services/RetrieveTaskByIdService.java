@@ -5,21 +5,20 @@ import backend.challenge.modules.task.repositories.ITaskRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 
 @Singleton
-public class RetrieveAllTasksService implements IRetrieveAllTasksService {
+public class RetrieveTaskByIdService implements IRetrieveTaskByIdService {
 
 	private final ITaskRepository taskRepository;
 
 	@Inject
-	public RetrieveAllTasksService(final ITaskRepository taskRepository) {
+	public RetrieveTaskByIdService(final ITaskRepository taskRepository) {
 		this.taskRepository = taskRepository;
 	}
 
 	@Override
-	public List<Task> execute() {
-		return taskRepository.show();
+	public Task execute(Long taskId) {
+		return taskRepository.index(taskId);
 	}
 
 }
