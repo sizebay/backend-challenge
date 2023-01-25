@@ -1,10 +1,7 @@
 package backend.challenge.modules.task.infra.http.views;
 
-import backend.challenge.modules.task.enums.TaskStatus;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Getter
 @Setter
@@ -12,5 +9,18 @@ public class TaskView {
 
 	private String title;
 	private String description;
+
+	public TaskView(String title, String description) {
+		this.title = title;
+		this.description = description;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 
 }

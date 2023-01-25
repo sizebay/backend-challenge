@@ -9,4 +9,12 @@ public class TaskProgressView {
 
 	private int progress;
 
+	public TaskProgressView(int progress) {
+		this.progress = progress;
+	}
+
+	public int getProgress() {
+		return progress;
+	}
+
 }
