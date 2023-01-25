@@ -1,6 +1,7 @@
 package backend.challenge.modules.task.services;
 
 import kikaha.core.test.KikahaRunner;
+import kikaha.urouting.api.Response;
 
 import static org.junit.Assert.assertEquals;
 
@@ -60,6 +61,26 @@ public class UpdateTaskProgressServiceTest {
 		assertEquals(task.getDescription(), "");
 		assertEquals(task.getProgress(), 100);
 		assertEquals(task.getStatus(), TaskStatus.COMPLETE);
+	}
+
+	@Test
+	public void shouldNotBeAbleToUpdateTaskProgressWhenProgressLessThanOneHundred() {
+		TaskDTO taskDTO = new TaskDTO("", "");
+		Task task = createTaskService.execute(taskDTO);
+		TaskProgressView taskProgressView = new TaskProgressView(-1);
+		Response response = taskProgressController.updateProgress(task.getId(), taskProgressView);
+		deleteTaskService.execute(task.getId());
+		assertEquals(response.statusCode(), 400);
+	}
+
+	@Test
+	public void shouldNotBeAbleToUpdateTaskProgressWhenProgressGreaterThanOneHundred() {
+		TaskDTO taskDTO = new TaskDTO("", "");
+		Task task = createTaskService.execute(taskDTO);
+		TaskProgressView taskProgressView = new TaskProgressView(101);
+		Response response = taskProgressController.updateProgress(task.getId(), taskProgressView);
+		deleteTaskService.execute(task.getId());
+		assertEquals(response.statusCode(), 400);
 	}
 
 }
