@@ -2,8 +2,9 @@ package backend.challenge.modules.task.services;
 
 import backend.challenge.modules.task.models.Task;
 
-public interface IUpdateTaskService {
+public interface IUpdateTaskService
+{
 
-	Task execute(Task task);
+	Task execute(Task taskToUpdate, Task taskWithNewInfo);
 
 }
