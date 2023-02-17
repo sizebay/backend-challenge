@@ -14,7 +14,7 @@ import java.util.UUID;
 @Path("tasks")
 public class TaskController {
 
-	private ITaskFacade service;
+	private final ITaskFacade service;
 
 	@Inject
 	public TaskController(final ITaskFacade service) {
