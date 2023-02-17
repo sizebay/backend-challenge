@@ -17,7 +17,7 @@
 	<properties>
 		<!-- variables -->
 		<version.java>11</version.java>
-		<version.lombok>1.18.8</version.lombok>
+		<version.lombok>1.18.22</version.lombok>
 		<version.kikaha>2.1.8.Final</version.kikaha>
 		<version.logback>1.2.3</version.logback>
 		<version.junit>4.13.1</version.junit>

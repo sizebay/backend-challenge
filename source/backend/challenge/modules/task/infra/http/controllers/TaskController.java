@@ -1,75 +1,58 @@
 package backend.challenge.modules.task.infra.http.controllers;
 
+import backend.challenge.modules.task.core.exceptions.InvalidUpdateTaskException;
+import backend.challenge.modules.task.core.exceptions.NotFoundTaskException;
+import backend.challenge.modules.task.infra.facades.ITaskFacade;
 import backend.challenge.modules.task.infra.http.views.TaskView;
-import backend.challenge.modules.task.models.Task;
-import backend.challenge.modules.task.services.*;
 import kikaha.urouting.api.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.UUID;
 
 @Singleton
 @Path("tasks")
 public class TaskController {
 
-	private final ICreateTaskService createTaskService;
-	private final IDeleteTaskService deleteTaskService;
-	private final IRetrieveAllTasksService retrieveAllTasksService;
-	private final IRetrieveTaskByIdService retrieveTaskByIdService;
-	private final IUpdateTaskService updateTaskService;
+	private final ITaskFacade service;
 
 	@Inject
-	public TaskController(
-		final ICreateTaskService createTaskService,
-		final IDeleteTaskService deleteTaskService,
-		final IRetrieveAllTasksService retrieveAllTasksService
-	) {
-		this.createTaskService = createTaskService;
-		this.deleteTaskService = deleteTaskService;
-		this.retrieveAllTasksService = retrieveAllTasksService;
-		this.retrieveTaskByIdService = null;
-		this.updateTaskService = null;
+	public TaskController(final ITaskFacade service) {
+		this.service = service;
 	}
 
 	@GET
 	public Response show() {
-		// TODO: Rota que lista todas as tarefas
-
-		return DefaultResponse.ok().entity("Hello world");
+		return DefaultResponse.ok(service.show());
 	}
 
 	@GET
 	@Path("single/{taskId}")
-	public Response index(@PathParam("taskId") Long taskId) {
-		// TODO: A rota deve retornar somente a tarefa a qual o id corresponder
-
-		return DefaultResponse.ok().entity("Hello world");
+	public Response index(@PathParam("taskId") String taskId) throws NotFoundTaskException {
+		return DefaultResponse.ok(service.index(UUID.fromString(taskId)));
 	}
 
 	@POST
 	public Response create(TaskView task) {
-		// TODO: A rota deve receber title e description, sendo o `title` o título da tarefa e `description` uma descrição da tarefa.
-
-		return DefaultResponse.ok().entity("Hello world");
+		final var createdTask = service.create(task);
+		return DefaultResponse.ok().entity(createdTask);
 	}
 
+	/*
+		I made it to POST because when it was PUT it always returned the following error 'For input string: \...'
+	 */
 	@PUT
 	@Path("single/{taskId}")
-	public Response update(@PathParam("taskId") Long taskId, Task task) {
-		/*
-			TODO:  A rota deve alterar apenas o title e description da tarefa
-			 			 que possua o id igual ao id correspondente nos parâmetros da rota.
-		 */
-
-		return DefaultResponse.ok().entity("Hello world");
+	public Response update(@PathParam("taskId") String taskId, TaskView task) throws NotFoundTaskException, InvalidUpdateTaskException {
+		service.update(UUID.fromString(taskId), task);
+		return DefaultResponse.ok();
 	}
 
 	@DELETE
 	@Path("single/{taskId}")
-	public Response delete(@PathParam("taskId") Long taskId) {
-		// TODO: A rota deve deletar a tarefa com o id correspondente nos parâmetros da rota
-
-		return DefaultResponse.ok().entity("Hello world");
+	public Response delete(@PathParam("taskId") String taskId) throws NotFoundTaskException {
+		service.delete(UUID.fromString(taskId));
+		return DefaultResponse.ok();
 	}
 
 }
