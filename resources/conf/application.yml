@@ -19,6 +19,7 @@ server:
   urouting:
     default-content-type: "application/json"
     content-type-priority: "CONFIG"
+    exception-handler: backend.challenge.modules.task.infra.http.handlers.exception.HttpJsonExceptionHandler
 
   health-check:
     enabled: true

@@ -1,7 +1,8 @@
-package backend.challenge.modules.task.services;
+package backend.challenge.modules.task.infra.services;
 
-import backend.challenge.modules.task.models.Task;
-import backend.challenge.modules.task.repositories.ITaskRepository;
+import backend.challenge.modules.task.core.models.Task;
+import backend.challenge.modules.task.core.repositories.ITaskRepository;
+import backend.challenge.modules.task.core.services.IRetrieveAllTasksService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,9 +20,7 @@ public class RetrieveAllTasksService implements IRetrieveAllTasksService {
 
 	@Override
 	public List<Task> execute() {
-		// TODO: Criar serviço responsável por recuperar todas as tarefas
-
-		return null;
+		return taskRepository.show();
 	}
 
 }

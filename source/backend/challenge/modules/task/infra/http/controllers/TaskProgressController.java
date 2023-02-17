@@ -1,12 +1,15 @@
 package backend.challenge.modules.task.infra.http.controllers;
 
+import backend.challenge.modules.task.core.dtos.TaskProgressDTO;
+import backend.challenge.modules.task.core.exceptions.InvalidUpdateTaskException;
+import backend.challenge.modules.task.core.exceptions.NotFoundTaskException;
+import backend.challenge.modules.task.core.services.IUpdateTaskProgressService;
 import backend.challenge.modules.task.infra.http.views.TaskProgressView;
-import backend.challenge.modules.task.models.Task;
-import backend.challenge.modules.task.services.*;
 import kikaha.urouting.api.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.UUID;
 
 @Singleton
 @Path("tasks/progress")
@@ -21,15 +24,13 @@ public class TaskProgressController {
 
 	@PUT
 	@Path("single/{taskId}")
-	public Response updateProgress(@PathParam("taskId") Long taskId, TaskProgressView taskProgressView) {
-		/*
-			TODO: A rota deve alterar apenas o progresso da tarefa que possua o id igual ao id correspondente
-			 			nos parâmetros da rota.
-			 			O `progress` pode ter o valor máximo de 100, e quando ele atingi o máximo,
-			 			o `status` deve ser alterado para `COMPLETE`
-		 */
+	public Response updateProgress(@PathParam("taskId") String taskId, TaskProgressView taskProgressView) throws NotFoundTaskException, InvalidUpdateTaskException {
+		updateTaskProgressService.execute(TaskProgressDTO.builder()
+				.id(UUID.fromString(taskId))
+				.progress(taskProgressView.getProgress())
+				.build());
 
-		return DefaultResponse.ok().entity("Hello world");
+		return DefaultResponse.ok();
 	}
 
 }
