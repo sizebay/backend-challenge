@@ -4,6 +4,6 @@ import backend.challenge.modules.task.models.Task;
 
 public interface IUpdateTaskService {
 
-	Task execute(Task task);
+    Task execute(Task task, Task newTask);
 
 }

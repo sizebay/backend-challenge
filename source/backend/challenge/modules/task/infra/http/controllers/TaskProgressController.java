@@ -1,5 +1,6 @@
 package backend.challenge.modules.task.infra.http.controllers;
 
+import backend.challenge.modules.task.dtos.TaskProgressDTO;
 import backend.challenge.modules.task.infra.http.views.TaskProgressView;
 import backend.challenge.modules.task.models.Task;
 import backend.challenge.modules.task.services.*;
@@ -13,23 +14,38 @@ import javax.inject.Singleton;
 public class TaskProgressController {
 
 	private final IUpdateTaskProgressService updateTaskProgressService;
+	private final IRetrieveTaskByIdService retrieveTaskByIdService;
 
 	@Inject
-	public TaskProgressController(final IUpdateTaskProgressService updateTaskProgressService) {
+	public TaskProgressController(
+			final IUpdateTaskProgressService updateTaskProgressService,
+			final IRetrieveTaskByIdService retrieveTaskByIdService
+	) {
 		this.updateTaskProgressService = updateTaskProgressService;
+		this.retrieveTaskByIdService = retrieveTaskByIdService;
 	}
 
 	@PUT
 	@Path("single/{taskId}")
 	public Response updateProgress(@PathParam("taskId") Long taskId, TaskProgressView taskProgressView) {
-		/*
-			TODO: A rota deve alterar apenas o progresso da tarefa que possua o id igual ao id correspondente
-			 			nos parâmetros da rota.
-			 			O `progress` pode ter o valor máximo de 100, e quando ele atingi o máximo,
-			 			o `status` deve ser alterado para `COMPLETE`
-		 */
+		try {
+			if (taskProgressView.getProgress() < 1 || taskProgressView.getProgress() > 100) {
+				return DefaultResponse.badRequest().entity("Enter a value between 1 and 100");
+			}
 
-		return DefaultResponse.ok().entity("Hello world");
+			TaskProgressDTO taskProgressDTO = TaskProgressDTO.create();
+			taskProgressDTO.setId(taskId);
+			taskProgressDTO.setProgress(taskProgressView.getProgress());
+			Task taskToUpdate = retrieveTaskByIdService.execute(taskId);
+
+			if (taskToUpdate == null) {
+				return DefaultResponse.notFound();
+			}
+
+			taskToUpdate = updateTaskProgressService.execute(taskProgressDTO);
+			return DefaultResponse.ok().entity(taskToUpdate);
+		} catch (Exception e) {
+			return DefaultResponse.badRequest().entity(e.getMessage());
+		}
 	}
-
 }

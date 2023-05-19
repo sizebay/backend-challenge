@@ -42,23 +42,27 @@
 			<groupId>io.skullabs.kikaha</groupId>
 			<artifactId>kikaha-core</artifactId>
 			<version>${version.kikaha}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.skullabs.kikaha</groupId>
 			<artifactId>kikaha-urouting</artifactId>
 			<version>${version.kikaha}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.skullabs.kikaha</groupId>
 			<artifactId>kikaha-jackson</artifactId>
 			<version>${version.kikaha}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<!-- Logging dependencies -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${version.logback}</version>
-		</dependency>
+            <scope>compile</scope>
+        </dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -77,6 +81,7 @@
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.2</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
